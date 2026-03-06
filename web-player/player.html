@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Player</title>
+    <style>
+        *{margin:0;padding:0}
+        body{
+            background:#000;
+            overflow:hidden;
+            cursor: none !important;  /* Hide cursor immediately */
+        }
+        video{
+            width:100vw;
+            height:100vh;
+            object-fit:contain;
+        }
+    </style>
+</head>
+<body>
+<video id="player" autoplay playsinline></video>
+
+<script>
+const CONFIG = {
+    default_volume: 0.7,
+    random_order: true,     // true - shuffle, false - in order
+    loop: true,
+    videos: [
+        {path: '/home/linaro/web-player/video/movie0.mov', volume: 0.3},
+        {path: '/home/linaro/web-player/video/movie1.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie2.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie3.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie4.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie8.mp4', volume: 0.5},
+        {path: '/home/linaro/web-player/video/movie6.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie7.mov', volume: 1.0}
+    ]
+};
+
+console.log('=== CONFIG ===');
+console.log('random_order:', CONFIG.random_order);
+console.log('default_volume:', CONFIG.default_volume);
+console.log('Videos:', CONFIG.videos.length);
+
+const player = document.getElementById('player');
+let currentIndex = 0;
+let playlist = [...CONFIG.videos];
+
+// --- CURSOR HIDING ---
+let cursorTimeout;
+const hideCursor = () => {
+    document.body.style.cursor = 'none';
+};
+
+const showCursorTemporarily = () => {
+    document.body.style.cursor = 'default';
+    clearTimeout(cursorTimeout);
+    cursorTimeout = setTimeout(hideCursor, 1000); // Hide after 1 sec
+};
+
+// Initially hide cursor
+hideCursor();
+
+// Show cursor briefly on mouse movement
+document.addEventListener('mousemove', showCursorTemporarily);
+document.addEventListener('click', showCursorTemporarily);
+document.addEventListener('touchstart', showCursorTemporarily);
+
+// Hide cursor after short delay on page load
+setTimeout(hideCursor, 100);
+
+if (CONFIG.random_order) {
+    console.log('Shuffling playlist...');
+    for (let i = playlist.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
+    }
+    console.log('Shuffled order:', playlist.map(v => v.path.split('/').pop()));
+}
+
+// Play video
+function playVideo(index) {
+    currentIndex = index;
+    
+    if (currentIndex >= playlist.length) {
+        if (CONFIG.loop) currentIndex = 0;
+        else return;
+    }
+    
+    const video = playlist[currentIndex];
+    const volume = video.volume || CONFIG.default_volume;
+    
+    console.log(`Playing: ${video.path.split('/').pop()}, volume: ${volume}`);
+    
+    player.src = video.path;
+    player.volume = volume;
+    player.load();
+    
+    player.play().catch(e => {
+        console.log('Autoplay blocked, waiting...');
+        setTimeout(() => player.play(), 1000);
+    });
+}
+
+// Events
+player.addEventListener('ended', () => {
+    console.log('Video ended');
+    playVideo(currentIndex + 1);
+});
+
+player.addEventListener('error', () => {
+    console.log('Video error');
+    setTimeout(() => playVideo(currentIndex + 1), 1000);
+});
+
+// Hide cursor on video interaction
+player.addEventListener('mouseenter', hideCursor);
+player.addEventListener('mouseleave', hideCursor);
+
+setTimeout(() => playVideo(0), 500);
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+Add your video files here and don't forget to add them.
+Open /home/linaro/web-player/player.html and locate the CONFIG section:
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+const CONFIG = {
+    default_volume: 0.7,
+    random_order: true,     // true - shuffle, false - in order
+    loop: true,
+    videos: [
+        {path: '/home/linaro/web-player/video/movie0.mov', volume: 0.3},
+        {path: '/home/linaro/web-player/video/movie1.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie2.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie3.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie4.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie8.mp4', volume: 0.5},
+        {path: '/home/linaro/web-player/video/movie6.mov', volume: 1.0},
+        {path: '/home/linaro/web-player/video/movie7.mov', volume: 1.0}
+    ]
+};
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+Add new entries following the same format:
+{path: '/home/linaro/web-player/video/your-video.mp4', volume: 1.0}
+
+
+Supported Video Formats:
+- MP4 with H.264 codec (recommended)
+- MOV with H.264 codec
+- Resolution: Up to 1920x1080
+- Frame rate: 30fps (tested)
+- Audio: AAC or MP3
